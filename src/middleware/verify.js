@@ -3,10 +3,11 @@ const handleStatus = require("../utils/handleStatus");
 
 const verify = {
   async verifyToken(req, res, next) {
-    const token = req.headers.split(" ")[1];
+    const token = req.headers?.token.split(" ")[1];
     await jwt.verify(token, process.env.KEY_JWT, async (error, user) => {
-      if (error) handleStatus(0, res, error);
-      else {
+      if (error) {
+        handleStatus(0, res, error);
+      } else {
         req.user = user;
         next();
       }

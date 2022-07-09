@@ -25,28 +25,29 @@ const authController = {
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
           const accessToken = await authController.generateAccessToken(user);
-          const refreshToken = await authController.generateAccessToken(user);
+          const refreshToken = await authController.generateRefreshToken(user);
           handleStatus(1, res, {
             message: "LOGIN SUCCESS",
             token: {
               accessToken,
               refreshToken,
             },
+            errors: 0,
           });
-        } else handleStatus(0, res, "WRONG PASSWORD");
+        } else handleStatus(0, res, { message: "WRONG PASSWORD", errors: 1 });
       } else handleStatus(0, res, "USER NOT VALID");
     } catch (error) {
       handleStatus(0, res, error);
     }
   },
   async refreshToken(req, res) {
-    const refreshToken = req.headers.refreshToken;
+    const refreshToken = req.headers.refreshtoken;
     if (!refreshToken) handleStatus(0, res, "YOU NOT ALLOW");
     try {
       jwt.verify(refreshToken, process.env.KEY_JWT, async (error, user) => {
         if (error) handleStatus(0, res, error);
         const newAccessToken = await authController.generateAccessToken(user);
-        handleStatus(0, res, {
+        handleStatus(1, res, {
           message: "REFRESH TOKEN SUCCESS",
           token: {
             accessToken: newAccessToken,
@@ -58,14 +59,14 @@ const authController = {
     }
   },
   generateAccessToken(user) {
-    const { id, isAdmin } = user;
-    return jwt.sign({ id, isAdmin }, process.env.KEY_JWT, {
-      expiresIn: "12h",
+    const { id, isAdmin, name, avatar } = user;
+    return jwt.sign({ id, isAdmin, name, avatar }, process.env.KEY_JWT, {
+      expiresIn: "24h",
     });
   },
   generateRefreshToken(user) {
-    const { id, isAdmin } = user;
-    return jwt.sign({ id, isAdmin }, process.env.KEY_JWT);
+    const { id, isAdmin, name, avatar } = user;
+    return jwt.sign({ id, isAdmin, name, avatar }, process.env.KEY_JWT);
   },
 };
 

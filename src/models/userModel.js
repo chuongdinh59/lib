@@ -18,6 +18,15 @@ const userSchema = new Schema(
       default: false,
       readOnly: true,
     },
+    name: {
+      type: String,
+      defalut: "User",
+    },
+    avatar: {
+      type: String,
+      default:
+        "https://toigingiuvedep.vn/wp-content/uploads/2021/06/hinh-anh-anime-girl-deo-kinh-1-634x600.jpg",
+    },
   },
   {
     timestamps: true,
